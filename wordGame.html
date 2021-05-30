@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Saravjeet Singh"> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <title>WordGame</title>
+</head>
+<body class="bg-light container">
+
+    <div class="h2 m-auto text-center">WordGame</div>
+    <div class="col-md-6 mx-lg-5 mt-4" id="userChoices">
+        <input type="text" class="form-control text-center" name="userWord" id="userWord" placeholder="Guess any color name to win..." oninput="checkWord()"  autocomplete="off">
+        <span id="statusIndicator"></span>
+    </div>
+    <div id="userSelect" class=" mx-lg-5 ">
+        <button class="btn btn-sm btn-danger mt-2" onclick="checkWinner()" id="submitButton">Submit</button>
+    </div>
+
+    <script>
+
+        let stringOfColors = `red, yellow, blue, brown, orange, green, violet, black, carnationpink, yelloworange, bluegreen, redviolet, redorange, yellowgreen, blueviolet, white, violetred, dandelion, cerulean, apricot, scarlet, greenyellow, indigo, gray`;
+        
+        let arrayOfColors = stringOfColors.split(', ');
+        let turn = 0;
+        // console.log(arrayOfColors);
+        const randomColorGenerate = () => {
+            return arrayOfColors[Math.floor(Math.random()*(arrayOfColors.length))];
+        }
+        let randomColor = randomColorGenerate()
+        console.log(randomColor);
+        
+        const checkWord = () => {
+            let ele = document.getElementById('userWord');
+            let regEx = /([A-z])/g;
+            // console.log(ele.value);
+            if(ele.value.length > 0 && ele.value.match(regEx)){
+                // console.log(ele.value.match(regEx).join(''))
+                ele.value = ele.value.match(regEx).join('')
+                // console.log(ele.value);
+            }else{
+                ele.value = ele.value.replace(/([^A-z])/, '');
+            }
+        } 
+        const convertToLower = (word) =>{
+            let wordArray = word.split('');
+            // console.log(wordArray);
+            
+            wordArray = wordArray.map((char)=>{
+                // console.log(char);
+
+                let uniCode = char.charCodeAt(0)
+                // console.log(char);
+
+                if( uniCode<=90 && uniCode>=65 ){
+                    uniCode+=32;
+                    // console.log(uniCode);
+
+                }
+                char = String.fromCharCode(uniCode)
+                // console.log(char);
+                return char;
+            });
+            // console.log(wordArray.join(''));
+            return wordArray.join('')
+        }
+
+        const checkWinner = () => {
+            let word = (document.getElementById('userWord').value);
+            word = convertToLower(word);
+            if(arrayOfColors.includes(word) && turn < 3){
+                if(randomColor === word){
+                    // console.log(turn);
+                    document.getElementById('userChoices').innerHTML = `<div class="alert alert-success">You won!</div>`;
+                    document.getElementById('userSelect').innerHTML = `<button class="btn btn-success" id="startRound" onclick="startAgain()">Click to start again</button>`;
+
+                }else{
+                    turn+=1;
+                    document.getElementById('statusIndicator').innerText = `you have remaining ${3-turn} chances. type again!`;
+                    // console.log(turn);
+                }
+            }else{
+                document.getElementById('statusIndicator').innerText = `This color is not into the game you have still ${3-turn} chances.`;
+            }
+            
+            if(turn==3){
+                document.getElementById('userChoices').innerHTML = `<div class="alert alert-danger">You Lost!</div>`;
+                document.getElementById('userSelect').innerHTML = `<button class="btn btn-success" id="startRound" onclick="startAgain()">Click to start again</button>`;
+
+            }
+        }
+        
+        const startAgain = () => {
+            turn = 0 ;
+            // console.log(turn);
+            randomColor = randomColorGenerate();
+            // console.log(randomColor)
+            document.getElementById('userChoices').innerHTML = `
+                    <div class="col-md-6 mx-lg-5 mt-4" id="userChoices">
+                <input type="text" class="form-control text-center" name="userWord" id="userWord" placeholder="Guess any color name to win..." oninput="checkWord()"  autocomplete="off">
+            </div><span id="statusIndicator"></span>`;
+
+            document.getElementById('userSelect').innerHTML = `<button class="btn btn-sm btn-danger mt-2" onclick="checkWinner()" id="submitButton">Submit</button>`;
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+</body>
+</html>
